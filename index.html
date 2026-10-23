@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>miname</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body class="is-loading">
+  <canvas id="gl" aria-hidden="true"></canvas>
+
+  <div class="loader" id="loader">
+    <svg class="wm loader__mark" viewBox="0 0 400 96" aria-label="miname">
+      <g class="wm__lines" fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 82V44A16 16 0 0 1 42 44V82M42 44A16 16 0 0 1 74 44V82"/>
+        <path d="M96 82V40"/>
+        <path d="M118 82V44A16 16 0 0 1 150 44V82"/>
+        <path d="M228 55A27 27 0 0 0 174 55A27 27 0 0 0 228 55M228 28V82"/>
+        <path d="M250 82V44A16 16 0 0 1 282 44V82M282 44A16 16 0 0 1 314 44V82"/>
+        <path d="M336 55H390A27 27 0 1 0 383.7 72.4"/>
+      </g>
+      <path class="wm__star" d="M96 1C97.5 9 99 10.5 107 12C99 13.5 97.5 15 96 23C94.5 15 93 13.5 85 12C93 10.5 94.5 9 96 1Z"/>
+    </svg>
+    <div class="loader__count" id="count">000</div>
+  </div>
+
+  <!-- the half-screen panel; one scene of content at a time, the 3D scene fills the other half -->
+  <aside class="ui" id="ui">
+    <div class="ui__wipe" id="wipe"></div>
+    <div class="ui__grain"></div>
+
+    <header class="ui__top">
+      <a class="ui__logo" href="#hello" data-go="0" aria-label="miname, first scene">
+        <svg class="wm" viewBox="0 0 400 96" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="18" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 82V44A16 16 0 0 1 42 44V82M42 44A16 16 0 0 1 74 44V82"/>
+            <path d="M96 82V40"/>
+            <path d="M118 82V44A16 16 0 0 1 150 44V82"/>
+            <path d="M228 55A27 27 0 0 0 174 55A27 27 0 0 0 228 55M228 28V82"/>
+            <path d="M250 82V44A16 16 0 0 1 282 44V82M282 44A16 16 0 0 1 314 44V82"/>
+            <path d="M336 55H390A27 27 0 1 0 383.7 72.4"/>
+          </g>
+          <path class="wm__star" d="M96 1C97.5 9 99 10.5 107 12C99 13.5 97.5 15 96 23C94.5 15 93 13.5 85 12C93 10.5 94.5 9 96 1Z"/>
+        </svg>
+      </a>
+      <p class="ui__count" aria-hidden="true">
+        <span class="odo"><span class="odo__track" id="odo"><span>01</span><span>02</span><span>03</span><span>04</span></span></span>
+        <span class="ui__of">/ 04</span>
+      </p>
+    </header>
+
+    <div class="ui__big" aria-hidden="true"><div class="ui__bigtrack" id="big"><span>01</span><span>02</span><span>03</span><span>04</span></div></div>
+
+    <!-- replace the placeholder text, prices, links and pictures below with the real ones -->
+    <div class="scenes" aria-live="polite">
+      <article class="scene" id="hello">
+        <p class="scene__kicker" data-a>hello</p>
+        <h1 class="scene__title"><span class="ln"><span>Illustrations</span></span><span class="ln"><span>with a little</span></span><span class="ln"><span>cold light</span></span></h1>
+        <p class="scene__text" data-a>I'm miname. I draw characters, cozy scenes and small stories. Commissions are open.</p>
+        <div class="scene__actions" data-a><a class="btn" href="#contact" data-go="3">Commission me</a><a class="btn btn--ghost" href="#works" data-go="1">See works</a></div>
+      </article>
+
+      <article class="scene" id="works">
+        <p class="scene__kicker" data-a>works</p>
+        <h2 class="scene__title"><span class="ln"><span>Selected</span></span><span class="ln"><span>works</span></span></h2>
+        <ul class="works">
+          <li data-a><span>01</span></li><li data-a><span>02</span></li><li data-a><span>03</span></li>
+          <li data-a><span>04</span></li><li data-a><span>05</span></li><li data-a><span>06</span></li>
+        </ul>
+      </article>
+
+      <article class="scene" id="prices">
+        <p class="scene__kicker" data-a>prices</p>
+        <h2 class="scene__title"><span class="ln"><span>What it</span></span><span class="ln"><span>costs</span></span></h2>
+        <ul class="prices">
+          <li data-a><span>Headshot</span><i></i><b>from $—</b></li>
+          <li data-a><span>Half body</span><i></i><b>from $—</b></li>
+          <li data-a><span>Full body</span><i></i><b>from $—</b></li>
+          <li data-a><span>Scene / background</span><i></i><b>+ $—</b></li>
+        </ul>
+        <p class="scene__note" data-a>Placeholder prices, the real ones are coming soon.</p>
+      </article>
+
+      <article class="scene" id="contact">
+        <p class="scene__kicker" data-a>contact</p>
+        <h2 class="scene__title"><span class="ln"><span>Let's make</span></span><span class="ln"><span>something</span></span><span class="ln"><span>soft</span></span></h2>
+        <p class="scene__text" data-a>Contacts are coming soon.</p>
+        <div class="scene__actions" data-a><a class="btn" href="#" aria-disabled="true">Telegram</a><a class="btn btn--ghost" href="#" aria-disabled="true">Email</a></div>
+      </article>
+    </div>
+
+    <footer class="ui__bottom">
+      <nav class="ui__nav" aria-label="Scenes">
+        <button type="button" data-go="0">hello</button>
+        <button type="button" data-go="1">works</button>
+        <button type="button" data-go="2">prices</button>
+        <button type="button" data-go="3">contact</button>
+      </nav>
+      <p class="ui__hint" aria-hidden="true"><i></i>scroll</p>
+    </footer>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/DrawSVGPlugin.min.js"></script>
+  <script type="module" src="main.js"></script>
+</body>
+</html>

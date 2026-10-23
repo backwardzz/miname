@@ -1,0 +1,2 @@
+/tmp/gradio/2d5ca77bd013a2ffba415d9313a5d0cc93fe0ca9c89449d1205cf230d5dd5f21/white_mesh.obj
+/tmp/gradio/436a24dc10361344dc832449ec697d6ec40eaf33ad4e88ec7b32c326f366ac29/textured_mesh.glb

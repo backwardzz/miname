@@ -1,0 +1,18 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>edit</title>
+<body style="margin:0;background:#888">
+<script>
+// dev tool: load a view into a canvas so the page script can inspect and repaint it
+window.load = (name) => new Promise(res => {
+  const img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas'); c.width = img.width; c.height = img.height;
+    const g = c.getContext('2d'); g.drawImage(img, 0, 0);
+    document.body.append(c);
+    res({ c, g });
+  };
+  img.src = name + '.png?' + Date.now();
+});
+window.save = (c, name) => fetch('http://127.0.0.1:8811/?name=' + name, { method: 'POST', body: c.toDataURL('image/png') });
+</script>

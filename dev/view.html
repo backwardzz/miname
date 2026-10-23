@@ -1,0 +1,28 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>model view</title>
+<style>html,body{margin:0;height:100%;background:#2a2838}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+// dev viewer: loads a GLB and posts views to the local receiver
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const file = new URLSearchParams(location.search).get('f') || 'new.glb';
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(innerWidth, innerHeight); document.body.append(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#2a2838');
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.01, 100);
+scene.add(new THREE.HemisphereLight('#fff', '#556', 1.6));
+const key = new THREE.DirectionalLight('#fff', 1.6); key.position.set(1, 2, 3); scene.add(key);
+const gltf = await new GLTFLoader().loadAsync(file);
+const obj = gltf.scene; scene.add(obj);
+const box = new THREE.Box3().setFromObject(obj), size = box.getSize(new THREE.Vector3()), c = box.getCenter(new THREE.Vector3());
+const dist = size.y * 2.1;
+window.shot = async (name, az, el = 0.05, zoom = 1, ty = 0) => {
+  const t = new THREE.Vector3(c.x, c.y + ty * size.y, c.z);
+  cam.position.set(t.x + Math.sin(az) * dist / zoom * Math.cos(el), t.y + Math.sin(el) * dist / zoom, t.z + Math.cos(az) * dist / zoom * Math.cos(el)); cam.lookAt(t);
+  renderer.render(scene, cam);
+  await fetch('http://127.0.0.1:8811/?name=' + name, { method: 'POST', body: renderer.domElement.toDataURL('image/png') });
+};
+window.info = { size: size.toArray() };
+</script>

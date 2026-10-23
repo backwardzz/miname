@@ -1,0 +1,79 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>projection test</title>
+<style>html,body{margin:0;height:100%;background:#2a2838}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"}}</script>
+<script type="module">
+// dev: paints the generated mesh by projecting the front, back and side drawings onto it
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+const q = new URLSearchParams(location.search);
+const file = q.get('f') || 'mv3.glb';
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(innerWidth, innerHeight); document.body.append(renderer.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#2a2838');
+const cam = new THREE.PerspectiveCamera(30, innerWidth / innerHeight, 0.01, 100);
+
+const tl = new THREE.TextureLoader();
+const tex = n => { const t = tl.load('../src/' + n + '.png'); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; };
+// figure bounds inside each drawing, in pixels (measured from the edited views)
+const IMG = {
+  F: { w: 347, h: 751, x0: 59, x1: 335, y0: 31, y1: 729 },
+  B: { w: 292, h: 746, x0: 0, x1: 276, y0: 31, y1: 718 },
+  S: { w: 217, h: 735, x0: 7, x1: 216, y0: 24, y1: 704 },
+};
+
+const gltf = await new GLTFLoader().loadAsync(file);
+const meshes = []; gltf.scene.updateMatrixWorld(true);
+gltf.scene.traverse(o => { if (o.isMesh) { const g = o.geometry.clone().applyMatrix4(o.matrixWorld); if (!g.attributes.normal) g.computeVertexNormals(); meshes.push(g); } });
+const geo = meshes[0]; geo.computeBoundingBox();
+const bb = geo.boundingBox, size = bb.getSize(new THREE.Vector3()), ctr = bb.getCenter(new THREE.Vector3());
+
+const U = {
+  texF: { value: tex('front_edit2') }, texB: { value: tex('back_edit2') }, texS: { value: tex('side_edit2') },
+  // per view: x = pixels per unit, y = image x of mesh centre, z = image y of mesh top, w = image width; second vec: image height
+  mF: { value: new THREE.Vector4() }, mB: { value: new THREE.Vector4() }, mS: { value: new THREE.Vector4() },
+  hFBS: { value: new THREE.Vector3(IMG.F.h, IMG.B.h, IMG.S.h) },
+  meshTop: { value: bb.max.y }, mc: { value: ctr },
+  off: { value: new THREE.Vector3(0, 0, 0) }, // fine-tune: front x, back x, side x (pixels)
+};
+function setMap() {
+  for (const k of ['F', 'B', 'S']) {
+    const I = IMG[k], s = (I.y1 - I.y0) / size.y;
+    U['m' + k].value.set(s, (I.x0 + I.x1) / 2, I.y0, I.w);
+  }
+}
+setMap();
+const mat = new THREE.ShaderMaterial({
+  uniforms: U,
+  vertexShader: /* glsl */`
+    varying vec3 vP; varying vec3 vN; varying vec3 vWN;
+    void main(){ vP = position; vN = normal; vWN = normalize(mat3(modelMatrix) * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: /* glsl */`
+    uniform sampler2D texF, texB, texS; uniform vec4 mF, mB, mS; uniform vec3 hFBS, mc, off; uniform float meshTop;
+    varying vec3 vP; varying vec3 vN; varying vec3 vWN;
+    vec2 uvOf(vec4 m, float h, float sx, float py){ return vec2(sx / m.w, 1.0 - (m.z + (meshTop - py) * m.x) / h); }
+    void main(){
+      vec3 n = normalize(vN);
+      vec2 uF = uvOf(mF, hFBS.x, mF.y + off.x + (vP.x - mc.x) * mF.x, vP.y);
+      vec2 uB = uvOf(mB, hFBS.y, mB.y + off.y - (vP.x - mc.x) * mB.x, vP.y);
+      vec2 uS = uvOf(mS, hFBS.z, mS.y + off.z - (vP.z - mc.z) * mS.x, vP.y);
+      float wF = pow(max(n.z, 0.0), 2.0), wB = pow(max(-n.z, 0.0), 2.0), wS = pow(abs(n.x), 2.0) * 0.7;
+      vec3 c = (texture2D(texF, uF).rgb * wF + texture2D(texB, uB).rgb * wB + texture2D(texS, uS).rgb * wS) / max(wF + wB + wS, 1e-3);
+      float l = 0.8 + 0.2 * max(dot(normalize(vWN), normalize(vec3(0.4, 0.8, 0.6))), 0.0);
+      gl_FragColor = vec4(c * l, 1.0);
+      #include <colorspace_fragment>
+    }`,
+});
+const mesh = new THREE.Mesh(geo, mat); scene.add(mesh);
+const dist = size.y * 2.1;
+window.view = (az, el = 0.05, zoom = 1, ty = 0) => {
+  const t = new THREE.Vector3(ctr.x, ctr.y + ty * size.y, ctr.z);
+  cam.position.set(t.x + Math.sin(az) * dist / zoom * Math.cos(el), t.y + Math.sin(el) * dist / zoom, t.z + Math.cos(az) * dist / zoom * Math.cos(el));
+  cam.lookAt(t); renderer.render(scene, cam);
+};
+window.shot = async (name, ...a) => { view(...a); await fetch('http://127.0.0.1:8811/?name=' + name, { method: 'POST', body: renderer.domElement.toDataURL('image/png') }); };
+window.U = U; window.IMG = IMG; window.setMap = setMap; window.geo = geo; window.bb = bb;
+window.info = { size: size.toArray(), ctr: ctr.toArray(), top: bb.max.y };
+view(0);
+</script>

@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "miname",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "http-server", "D:\\miname", "-p", "8798", "-c-1", "--silent"],
+      "port": 8798
+    }
+  ]
+}

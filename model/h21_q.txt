@@ -1,0 +1,17 @@
+data: {"msg":"estimation","event_id":"cabd5ec1e0864a0883f3b3c63397f026","rank":0,"queue_size":1,"rank_eta":139.1325783453126}
+
+data: {"msg":"process_starts","event_id":"cabd5ec1e0864a0883f3b3c63397f026","eta":139.1325783453126}
+
+
+
+
+
+
+
+
+
+
+data: {"msg":"process_completed","event_id":"cabd5ec1e0864a0883f3b3c63397f026","output":{"data":[{"value":{"path":"/tmp/gradio/2d5ca77bd013a2ffba415d9313a5d0cc93fe0ca9c89449d1205cf230d5dd5f21/white_mesh.obj","url":"https://tencent-hunyuan3d-2-1.hf.space/file=/tmp/gradio/2d5ca77bd013a2ffba415d9313a5d0cc93fe0ca9c89449d1205cf230d5dd5f21/white_mesh.obj","size":1453453,"orig_name":"white_mesh.obj","mime_type":null,"is_stream":false,"meta":{"_type":"gradio.FileData"}},"__type__":"update"},{"value":{"path":"/tmp/gradio/436a24dc10361344dc832449ec697d6ec40eaf33ad4e88ec7b32c326f366ac29/textured_mesh.glb","url":"https://tencent-hunyuan3d-2-1.hf.space/file=/tmp/gradio/436a24dc10361344dc832449ec697d6ec40eaf33ad4e88ec7b32c326f366ac29/textured_mesh.glb","size":3248548,"orig_name":"textured_mesh.glb","mime_type":null,"is_stream":false,"meta":{"_type":"gradio.FileData"}},"__type__":"update"},"\n        <div style='height: 650; width: 100%;'>\n        <iframe src=\"/static/9cf10ddd-3091-4af1-a995-5a03407b7db1/textured_mesh.html\" height=\"650\" width=\"100%\" frameborder=\"0\"></iframe>\n        </div>\n    ",{"model":{"shapegen":"tencent/Hunyuan3D-2.1/hunyuan3d-dit-v2-1","texgen":"tencent/Hunyuan3D-2.1"},"params":{"caption":null,"steps":30,"guidance_scale":5,"seed":1234,"octree_resolution":256,"check_box_rembg":true,"num_chunks":8000},"number_of_faces":199022,"number_of_vertices":99388,"time":{"remove background":1.0365102291107178,"shape generation":17.409265279769897,"export to trimesh":0.04879951477050781,"face reduction":2.2977068424224854,"texture generation":106.23927664756775,"convert textured OBJ to GLB":0.617027759552002,"total":127.65970921516418}},1234],"is_generating":false,"duration":136.64284372329712,"average_duration":138.62459939970097,"render_config":null,"changed_state_ids":[]},"success":true}
+
+data: {"msg":"close_stream","event_id":null}
+
